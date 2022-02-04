@@ -21,10 +21,6 @@ Originally, telnet was used to connect to hosts, but SSH has replaced that over 
 After connecting with telnet hitting ^] and typing 'exit' is a bummer. I wrote this so I won't have to anymore.
 
 
-Compile:
-
-`gcc isopen.c -o isopen`
-
 
 Use:
 
@@ -44,12 +40,18 @@ Trying 35.201.65.17:443...
 Port 443 is listening, but no data recieved.
 ```
 
+Compile:
+`make`
 
 Install:
+(as root)
 ```
-sudo mv /usr/bin/telnet /usr/bin/telnet-orig
-sudo cp isopen /usr/local/bin/isopen
-sudo chown root:root /usr/local/bin/isopen
-sudo chmod u+x /usr/local/bin/isopen
-sudo ln -s /usr/local/bin/isopen /usr/bin/telnet
+make install
+make replace_telnet
+```
+
+Undo:
+(as root)
+```
+make uninstall
 ```
