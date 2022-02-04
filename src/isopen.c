@@ -19,7 +19,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -59,10 +59,16 @@ bool isNumber(char number[])
 
 // Display the help message.
 // Returns 1 which is returned exit code.
-int showHelp(char program[]) {
+int usage(char program[]) {
 
-    printf("%s - a tool for reading port banners.", program);
-    printf("Usage: %s [<hostname>] <port #>\n", program);
+    printf("Usage: %s [OPTIONS] [<host>] [<port #>]\n", program);
+    puts("Display remote network port banners.\n");
+    puts("\thost\t\tSpecifies a host to contact over the network.");
+    puts("\t\t\tIf not specified, localhost is used.\n");
+    puts("\tport\t\tSpecifies a port number or service name to contact.");
+    puts("\t\t\tIf not specified, the SSH port (22) is used.\n");
+    puts("\t--help\t\tprint this help, then exit\n");
+    puts("\t--version\tprint version number, then exit\n");
     return 1;
 
 }
@@ -70,7 +76,9 @@ int showHelp(char program[]) {
 int main(int argc , char **argv)
 {
 
+    #define PROGRAM "isopen"
     #define LENGTH 20
+    #define VERSION "0.9"
 
     int err, sock, port, length;
     struct hostent *host;
@@ -81,8 +89,12 @@ int main(int argc , char **argv)
     char hostname[100] = "127.0.0.1";
     char ip_buffer[20];
 
-    if ( argc != 3 && argc != 2 ) {
-        return showHelp(argv[0]);
+    if ( argc != 3 && argc != 2 || (strcmp(argv[1], "--help") == 0) ) {
+        return usage(PROGRAM);
+    }
+    if ( strcmp(argv[1], "--version") == 0 ) {
+        printf("%s\n", VERSION);
+        return 0;
     }
     if ( argc == 2 ) {
         raw_port = argv[1];
@@ -95,8 +107,8 @@ int main(int argc , char **argv)
         port = strtoimax(raw_port,&endptr,10);
     }			
     else {
-        printf("Bad port number...\n");
-        return showHelp(argv[0]);
+        puts("Bad port number...\n\n");
+        return usage(PROGRAM);
     }
 
     //Create a socket of type internet
@@ -126,7 +138,7 @@ int main(int argc , char **argv)
 
         else {
             herror(hostname);
-            showHelp(argv[0]);
+            usage(PROGRAM);
             exit(2);
         }
     }
